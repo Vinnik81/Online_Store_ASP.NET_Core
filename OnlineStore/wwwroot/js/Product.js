@@ -12,7 +12,8 @@
                 "render": function (data) {
                     return `
                     <a href="/Admin/Product/CreateUpdate?id=${data}"><i class="bi bi-pencil-square"></i></a>
-                    <a onclick=RemoveProduct("/Admin/Product/Delete/${data}")><i class="bi bi-trash-trash"></i></a>`
+                    <a onclick=RemoveProduct("/Admin/Product/Delete/${data}")><i class="bi bi-trash"></i></a>
+                    `
                 }
             }
         ]
@@ -20,6 +21,7 @@
 });
 
 function RemoveProduct(url) {
+    console.log(url);
     Swal.fire({
         title: 'Are you sure?',
         text: "You won't be able to revert this!",
