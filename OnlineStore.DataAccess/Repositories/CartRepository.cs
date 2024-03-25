@@ -20,7 +20,14 @@ namespace OnlineStore.DataAccess.Repositories
         {
             if (cart != null)
             {
-                cart.Count += count;
+                if (cart.Count < 0)
+                {
+                    cart.Count = 0;
+                }
+                else
+                {
+                    cart.Count += count;
+                }
                 Update(cart);
             }
         }

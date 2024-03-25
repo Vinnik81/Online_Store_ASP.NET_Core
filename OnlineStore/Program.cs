@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore;
 using OnlineStore.DataAccess.Data;
 using OnlineStore.DataAccess.Repositories;
 using static Microsoft.EntityFrameworkCore.DbContextOptionsBuilder;
@@ -13,20 +14,23 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
        sqlServerOptionsAction: sqlOptions =>
        {
+           //sqlOptions.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName);
            sqlOptions.MigrationsAssembly("OnlineStore");
        });
     });
 
-
+//builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 //builder.Services.AddDefaultIdentity<IdentityUser>()
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-//builder.Services.AddRazorPages();
+builder.Services.AddRazorPages();
+
+builder.Logging.AddConsole();
 
 var app = builder.Build();
 
@@ -45,7 +49,9 @@ app.UseRouting();
 app.UseAuthentication();;
 
 app.UseAuthorization();
-//app.MapRazorPages();
+
+
+app.MapRazorPages();
 app.MapControllerRoute(
     name: "default",
     pattern: "{area=Customer}/{controller=Home}/{action=Index}/{id?}");
