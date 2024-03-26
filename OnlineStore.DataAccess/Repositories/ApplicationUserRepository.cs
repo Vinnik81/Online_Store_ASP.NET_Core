@@ -22,7 +22,6 @@ namespace OnlineStore.DataAccess.Repositories
             if (userDb != null)
             {
                 userDb.Name = applicationUser.Name;
-                userDb.PhoneNumber = applicationUser.PhoneNumber;
                 userDb.Address = applicationUser.Address;
                 userDb.City = applicationUser.City;
                 userDb.State = applicationUser.State;

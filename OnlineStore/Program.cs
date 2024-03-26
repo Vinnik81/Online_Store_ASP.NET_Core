@@ -4,6 +4,7 @@ using OnlineStore.DataAccess.Data;
 using OnlineStore.DataAccess.Repositories;
 using static Microsoft.EntityFrameworkCore.DbContextOptionsBuilder;
 using Microsoft.AspNetCore.Identity;
+using OnlineStore.Utility.DbInitalizer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,16 +22,17 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 //builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-//builder.Services.AddDefaultIdentity<IdentityUser>()
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
+//builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IDbInitializer, DbInitializerRepo>();
 builder.Services.AddRazorPages();
 
-builder.Logging.AddConsole();
+
 
 var app = builder.Build();
 
@@ -46,6 +48,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+dataSedding();
 app.UseAuthentication();;
 
 app.UseAuthorization();
@@ -57,3 +60,12 @@ app.MapControllerRoute(
     pattern: "{area=Customer}/{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
+
+void dataSedding()
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var DbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
+        DbInitializer.Initialize();
+    }
+}
