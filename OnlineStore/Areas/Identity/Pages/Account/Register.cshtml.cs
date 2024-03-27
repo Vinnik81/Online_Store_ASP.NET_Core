@@ -18,6 +18,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using OnlineStore.Models;
+using OnlineStore.Utility;
 
 namespace OnlineStore.Areas.Identity.Pages.Account
 {
@@ -125,10 +127,20 @@ namespace OnlineStore.Areas.Identity.Pages.Account
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+
+
+                user.Name = Input.Name;
+                user.PhoneNumber = Input.Phone;
+                user.Address = Input.Address;
+                user.City = Input.City;
+                user.State = Input.State;
+                user.PinCode = Input.PinCode;
+
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
                 if (result.Succeeded)
                 {
+                    _userManager.AddToRoleAsync(user, WebSiteRole.Role_User).GetAwaiter().GetResult();
                     _logger.LogInformation("User created a new account with password.");
 
                     var userId = await _userManager.GetUserIdAsync(user);
@@ -163,11 +175,11 @@ namespace OnlineStore.Areas.Identity.Pages.Account
             return Page();
         }
 
-        private IdentityUser CreateUser()
+        private ApplicationUser CreateUser()
         {
             try
             {
-                return Activator.CreateInstance<IdentityUser>();
+                return Activator.CreateInstance<ApplicationUser>();
             }
             catch
             {

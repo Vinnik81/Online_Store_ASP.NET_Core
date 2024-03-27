@@ -5,6 +5,8 @@ using OnlineStore.DataAccess.Repositories;
 using static Microsoft.EntityFrameworkCore.DbContextOptionsBuilder;
 using Microsoft.AspNetCore.Identity;
 using OnlineStore.Utility.DbInitalizer;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using OnlineStore.Utility;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,12 +26,14 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 //builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
 
 
 
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IDbInitializer, DbInitializerRepo>();
+builder.Services.AddScoped<IEmailSender, EmailSender>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddRazorPages();
 
 

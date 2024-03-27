@@ -14,8 +14,8 @@ namespace OnlineStore.DataAccess.Repositories
         public IProductRepository Product { get; private set; }
         public ICartRepository Cart { get;  private set; }
         public IApplicationUser ApplicationUser { get; private set; }
-        //public IOrderHeaderRepository OrderHeader { get; private set; }
-        //public IOrderDetailRepository OrderDetail { get; private set; }
+        public IOrderHeaderRepository OrderHeader { get; private set; }
+        public IOrderDetailRepository OrderDetail { get; private set; }
 
 
         public UnitOfWork(ApplicationDbContext context)
@@ -25,8 +25,8 @@ namespace OnlineStore.DataAccess.Repositories
             Product = new ProductRepository(context);
             Cart = new CartRepository(context);
             ApplicationUser = new ApplicationUserRepository(context);
-            //OrderHeader = new OrderHeaderRepository(context);
-            //OrderDetail = new OrderDetailRepository(context);
+            OrderHeader = new OrderHeaderRepository(context);
+            OrderDetail = new OrderDetailRepository(context);
         }
 
         public void Save()
