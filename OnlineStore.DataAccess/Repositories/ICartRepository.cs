@@ -11,5 +11,6 @@ namespace OnlineStore.DataAccess.Repositories
     {
         void Update(Cart cart);
         void IncrementCount(Cart cartItem, int count);
-    }
+		void DecrementCartItem(Cart cart, int count);
+	}
 }

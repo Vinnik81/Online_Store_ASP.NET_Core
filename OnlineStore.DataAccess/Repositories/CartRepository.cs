@@ -16,11 +16,27 @@ namespace OnlineStore.DataAccess.Repositories
             _context = context;
         }
 
-        public void IncrementCount(Cart cart, int count)
+		public void DecrementCartItem(Cart cart, int count)
+		{
+			if (cart != null)
+			{
+				if (cart.Count <= 0)
+				{
+					cart.Count = 0;
+				}
+				else
+				{
+					cart.Count -= count;
+				}
+				Update(cart);
+			}
+		}
+
+		public void IncrementCount(Cart cart, int count)
         {
             if (cart != null)
             {
-                if (cart.Count < 0)
+                if (cart.Count <= 0)
                 {
                     cart.Count = 0;
                 }
