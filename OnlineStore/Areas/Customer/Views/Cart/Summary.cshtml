@@ -1,0 +1,95 @@
+﻿@model OnlineStore.DataAccess.ViewModels.CartVM
+
+<form method="post">
+	<div class="row">
+		<div class="col-md-8 mb-4">
+			<div class="card mb-4">
+				<div class="card-header py-3">
+					<h5 class="mb-0">Shipping details</h5>
+				</div>
+				<div class="card-body">
+					<form>
+						<div class="row mb-4">
+							<div class="col">
+								<div class="form-outline">
+									<input type="text" asp-for="@Model.OrderHeader.Name" class="form-control" />
+									<label class="form-label" for="form7Example1">Name</label>
+								</div>
+							</div>
+
+							<div class="form-outline mb-4">
+								<input type="number" asp-for="@Model.OrderHeader.Phone" class="form-control" />
+								<label class="form-label" for="form7Example6">Phone</label>
+							</div>
+							<div class="form-outline mb-4">
+								<textarea  asp-for="@Model.OrderHeader.Address" class="form-control" rows="4"></textarea>
+								<label class="form-label" for="form7Example7">Address</label>
+							</div>
+							<div class="form-outline mb-4">
+								<input type="text" asp-for="@Model.OrderHeader.City" class="form-control" />
+								<label class="form-label" for="form7Example6">City</label>
+							</div>
+							<div class="form-outline mb-4">
+								<input type="text" asp-for="@Model.OrderHeader.State" class="form-control" />
+								<label class="form-label" for="form7Example6">State</label>
+							</div>
+							<div class="form-outline mb-4">
+								<input type="text" asp-for="@Model.OrderHeader.PostalCode" class="form-control" />
+								<label class="form-label" for="form7Example6">Postal Code</label>
+							</div>
+							@* <div class="col">
+								<div class="form-outline">
+									<input type="text" id="form7Example2" class="form-control" />
+									<label class="form-label" for="form7Example2">Last Name</label>
+								</div>
+							</div> *@
+							</div>
+
+							@* <div class="form-outline mb-4">
+								<input type="text" id="form7Example3" class="form-control" />
+								<label class="form-label" for="form7Example3">Company Name</label>
+							</div> *@
+
+							@* <div class="form-outline mb-4">
+								<input type="email" id="form7Example5" class="form-control" />
+								<label class="form-label" for="form7Example5">Email</label>
+							</div> *@
+					</form>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-md-4 mb-4">
+			<div class="card mb-4">
+				<div class="card-header py-3">
+					<h5 class="mb-0">Summary</h5>
+				</div>
+
+				<div class="card-body">
+					<ul class="list-group list-group-flush">
+						@foreach(var details in Model.ListOfCart)
+						{
+							<li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-0">
+								<span>@details.Product.Name</span>
+								<span>@details.Count</span>
+								<span>@(((details.Product.Price) * (details.Count)).ToString("c"))</span>
+							</li>
+						}
+						
+						<li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3">
+							<div>
+								<strong>
+									<p class="mb-0">(including VAT)</p>
+								</strong>
+							</div>
+							<span><strong>@Model.OrderHeader.OrderTotal.ToString("c")</strong></span>
+						</li>
+                    </ul>
+
+					<button type="submit" class="btn btn-primary btn-lg btn-block">Make purchase</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</form>
+

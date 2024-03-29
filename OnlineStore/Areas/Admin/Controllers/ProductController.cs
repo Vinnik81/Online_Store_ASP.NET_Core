@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using OnlineStore.DataAccess.Repositories;
 using OnlineStore.DataAccess.ViewModels;
@@ -7,7 +8,8 @@ using OnlineStore.Models;
 namespace OnlineStore.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class ProductController : Controller
+	[Authorize(Roles = "Admin")]
+	public class ProductController : Controller
     {
         private IUnitOfWork _unitOfWork;
         private IWebHostEnvironment _hostEnvironment;
