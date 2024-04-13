@@ -23,7 +23,7 @@ namespace OnlineStore.Utility.DbInitalizer
             _context = context;
         }
 
-        public void Initialize()
+        public void Initializer()
         {
             try
             {
@@ -43,6 +43,7 @@ namespace OnlineStore.Utility.DbInitalizer
                 _roleManager.CreateAsync(new IdentityRole(WebSiteRole.Role_User)).GetAwaiter().GetResult();
                 _roleManager.CreateAsync(new IdentityRole(WebSiteRole.Role_Employee)).GetAwaiter().GetResult();
 
+
                 _userManager.CreateAsync(new ApplicationUser
                 {
                     UserName = "admin@gmail.com",
@@ -56,8 +57,9 @@ namespace OnlineStore.Utility.DbInitalizer
                 }, "Admin@123").GetAwaiter().GetResult();
                 ApplicationUser user = _context.ApplicationUsers.FirstOrDefault(x => x.Email == "admin@gmail.com");
                 _userManager.AddToRoleAsync(user, WebSiteRole.Role_Admin).GetAwaiter().GetResult();
-            }
-            return;
+			}
+            
+				return;
         }
     }
 }

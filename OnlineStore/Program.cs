@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using OnlineStore.Utility.DbInitalizer;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using OnlineStore.Utility;
+using Stripe;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
            sqlOptions.MigrationsAssembly("OnlineStore");
        });
     });
+
+builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("PaymentSettings"));
 
 //builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -59,6 +62,8 @@ app.UseStaticFiles();
 
 app.UseRouting();
 dataSedding();
+StripeConfiguration.ApiKey = builder.Configuration.GetSection("PaymentSettings:SecretKey").Get<string>();
+
 app.UseAuthentication();;
 
 app.UseAuthorization();
@@ -76,6 +81,6 @@ void dataSedding()
     using (var scope = app.Services.CreateScope())
     {
         var DbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
-        DbInitializer.Initialize();
+        DbInitializer.Initializer();
     }
 }

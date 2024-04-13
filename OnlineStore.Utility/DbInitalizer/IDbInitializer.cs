@@ -8,6 +8,6 @@ namespace OnlineStore.Utility.DbInitalizer
 {
     public interface IDbInitializer
     {
-        void Initialize();
+        void Initializer();
     }
 }

@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using OnlineStore.DataAccess.Repositories;
 using OnlineStore.DataAccess.ViewModels;
 using OnlineStore.Models;
+using OnlineStore.Utility;
+using Stripe.Checkout;
 using System.Runtime.Intrinsics.X86;
 using System.Security.Claims;
 
@@ -64,95 +66,95 @@ namespace OnlineStore.Areas.Customer.Controllers
             return View(vm);
         }
 
-        //     [HttpPost]
-        //     public IActionResult Summary(CartVM vm)
-        //     {
-        //         var claimsIdentity = (ClaimsIdentity)User.Identity;
-        //         var claims = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+        [HttpPost]
+        public IActionResult Summary(CartVM vm)
+        {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claims = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
 
-        //         vm.ListOfCart = _unitOfWork.Cart.GetAll(x => x.ApplicationUserId == claims.Value, includeProperties: "Product");
-        //         vm.OrderHeader.OrderStatus = OrderStatus.StatusPending;
-        //         vm.OrderHeader.PaymentStatus = PaymentStatus.StatusPending;
-        //vm.OrderHeader.DateOfOrder = DateTime.Now;
-        //vm.OrderHeader.ApplicationUserId = claims.Value;
+            vm.ListOfCart = _unitOfWork.Cart.GetAll(x => x.ApplicationUserId == claims.Value, includeProperties: "Product");
+            vm.OrderHeader.OrderStatus = OrderStatus.StatusPending;
+            vm.OrderHeader.PaymentStatus = PaymentStatus.StatusPending;
+            vm.OrderHeader.DateOfOrder = DateTime.Now;
+            vm.OrderHeader.ApplicationUserId = claims.Value;
 
-        //         foreach (var item in vm.ListOfCart)
-        //         {
-        //             vm.OrderHeader.OrderTotal += (item.Product.Price * item.Count);
-        //         }
+            foreach (var item in vm.ListOfCart)
+            {
+                vm.OrderHeader.OrderTotal += (item.Product.Price * item.Count);
+            }
 
-        //         _unitOfWork.OrderHeader.Add(vm.OrderHeader);
-        //_unitOfWork.Save();
+            _unitOfWork.OrderHeader.Add(vm.OrderHeader);
+            _unitOfWork.Save();
 
-        //         foreach (var item in vm.ListOfCart)
-        //         {
-        //             OrderDetail orderDetail = new OrderDetail
-        //	{
-        //		ProductId = item.ProductId,
-        //		OrderHeaderId = vm.OrderHeader.Id,
-        //		Count = item.Count,
-        //		Price = item.Product.Price
-        //	};
-        //             _unitOfWork.OrderDetail.Add(orderDetail);
-        //	_unitOfWork.Save();
-        //         }
+            foreach (var item in vm.ListOfCart)
+            {
+                OrderDetail orderDetail = new OrderDetail
+                {
+                    ProductId = item.ProductId,
+                    OrderHeaderId = vm.OrderHeader.Id,
+                    Count = item.Count,
+                    Price = item.Product.Price
+                };
+                _unitOfWork.OrderDetail.Add(orderDetail);
+                _unitOfWork.Save();
+            }
 
-        //         var domain = "https://localhost:7046/";
-        //         var options = new SessionCreateOptions
-        //         {
-        //             LineItems = new List<SessionLineItemOptions>(),
-        //	Mode = "payment",
-        //	SuccessUrl = domain + $"customer/cart/orderConfirmation?id={vm.OrderHeader.Id}",
-        //	CancelUrl = domain + $"customer/cart/Index",
-        //         };
+            var domain = "https://localhost:7064/";
+            var options = new SessionCreateOptions
+            {
+                LineItems = new List<SessionLineItemOptions>(),
+                Mode = "payment",
+                SuccessUrl = domain + $"Customer/Cart/ordersuccess?id={vm.OrderHeader.Id}",
+                CancelUrl = domain + $"Customer/Cart/Index",
+            };
 
-        //         foreach (var item in vm.ListOfCart)
-        //         {
-        //             var lineItemsOptions = new SessionLineItemOptions
-        //	{
-        //		PriceData = new SessionLineItemPriceDataOptions
-        //		{
-        //			UnitAmount = (long)(item.Product.Price * 100),
-        //			Currency = "RUB",
-        //			ProductData = new SessionLineItemPriceDataProductDataOptions
-        //			{
-        //				Name = item.Product.Name
-        //			},
-        //		},
-        //		Quantity = item.Count
-        //	};
-        //	options.LineItems.Add(lineItemsOptions);
-        //         }
+            foreach (var item in vm.ListOfCart)
+            {
+                var lineItemsOptions = new SessionLineItemOptions
+                {
+                    PriceData = new SessionLineItemPriceDataOptions
+                    {
+                        UnitAmount = (long)(item.Product.Price * 100),
+                        Currency = "RUB",
+                        ProductData = new SessionLineItemPriceDataProductDataOptions
+                        {
+                            Name = item.Product.Name
+                        },
+                    },
+                    Quantity = item.Count
+                };
+                options.LineItems.Add(lineItemsOptions);
+            }
 
-        //         var service = new SessionService();
-        //Session session = service.Create(options);
-        //_unitOfWork.OrderHeader.PaymentStatus(vm.OrderHeader.Id, session.Id, session.PaymentIntentId);
-        //_unitOfWork.Save();
+            var service = new SessionService();
+            Session session = service.Create(options);
+            _unitOfWork.OrderHeader.PaymentStatus(vm.OrderHeader.Id, session.Id, session.PaymentIntentId);
+            _unitOfWork.Save();
 
-        //         _unitOfWork.Cart.DeleteRange(vm.ListOfCart);
-        //_unitOfWork.Save();
+            _unitOfWork.Cart.DeleteRange(vm.ListOfCart);
+            _unitOfWork.Save();
 
-        //Response.Headers.Add("Location", session.Url);
-        //return new StatusCodeResult(303);
+            Response.Headers.Add("Location", session.Url);
+            return new StatusCodeResult(303);
 
-        //         return RedirectToAction("Index", "Home");
-        //     }
+            return RedirectToAction("Index", "Home");
+        }
 
-        //     public IActionResult ordersuccess(int id)
-        //     {
-        //         var orderHeader = _unitOfWork.OrderHeader.GetT(x => x.Id == id);
-        //var service = new SessionService();
-        //Session session = service.Get(orderHeader.SessionId);
-        //if (session.PaymentStatus.ToLower() == "paid")
-        //{
-        //	_unitOfWork.OrderHeader.UpdateStatus(id, OrderStatus.StatusApproved, PaymentStatus.StatusApproved);
-        //}
+        public IActionResult ordersuccess(int id)
+        {
+            var orderHeader = _unitOfWork.OrderHeader.GetT(x => x.Id == id);
+            var service = new SessionService();
+            Session session = service.Get(orderHeader.SessionId);
+            if (session.PaymentStatus.ToLower() == "paid")
+            {
+                _unitOfWork.OrderHeader.UpdateStatus(id, OrderStatus.StatusApproved, PaymentStatus.StatusApproved);
+            }
 
-        //         List<Cart> cart = _unitOfWork.Cart.GetAll(x => x.ApplicationUserId == orderHeader.ApplicationUserId).ToList();
-        //_unitOfWork.Cart.DeleteRange(cart);
-        //_unitOfWork.Save();
-        //return View(id);
-        //     }
+            List<Cart> cart = _unitOfWork.Cart.GetAll(x => x.ApplicationUserId == orderHeader.ApplicationUserId).ToList();
+            _unitOfWork.Cart.DeleteRange(cart);
+            _unitOfWork.Save();
+            return View(id);
+        }
 
         [HttpGet]
         public IActionResult plus(int id)
