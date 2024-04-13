@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor httpContext;
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -32,9 +35,21 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-area="Admin" asp-action="Index" asp-controller="Product">Products</a>
                         </li> 
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="Customer" asp-action="Index" asp-controller="Cart"><i class="bi bi-cart"></i></a>
-                        </li>
+                        @if (httpContext.HttpContext.Session.GetInt32("SessionCart") != null)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="Customer" asp-action="Index" asp-controller="Cart">
+                                    <i class="bi bi-cart"></i>
+                                    (@httpContext.HttpContext.Session.GetInt32("SessionCart"))
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="Customer" asp-action="Index" asp-controller="Cart"><i class="bi bi-cart">(0)</i></a>
+                            </li>
+                        }
                         @* <li class="nav-item">
                             <a class="nav-link" href="#">About</a>
                         </li> *@

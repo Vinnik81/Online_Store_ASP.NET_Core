@@ -140,6 +140,7 @@ namespace OnlineStore.Areas.Customer.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        [HttpGet]
         public IActionResult ordersuccess(int id)
         {
             var orderHeader = _unitOfWork.OrderHeader.GetT(x => x.Id == id);
