@@ -73,79 +73,79 @@ namespace OnlineStore.Areas.Admin.Controllers
             return View(orderVM);
         }
 
-        //[Authorize(Roles = WebSiteRole.Role_Admin + "," + WebSiteRole.Role_Employee)]
-        //[HttpPost]
-        //public IActionResult OrderDetails(OrderVM vm)
-        //{
-        //    var orderHeader = _unitOfWork.OrderHeader.GetT(x => x.Id == vm.OrderHeader.Id);
-        //    orderHeader.Name = vm.OrderHeader.Name;
-        //    orderHeader.Phone = vm.OrderHeader.Phone;
-        //    orderHeader.Address = vm.OrderHeader.Address;
-        //    orderHeader.City = vm.OrderHeader.City;
-        //    orderHeader.State = vm.OrderHeader.State;
-        //    orderHeader.PostalCode = vm.OrderHeader.PostalCode;
-        //    if (vm.OrderHeader.Carrier != null)
-        //    {
-        //        orderHeader.Carrier = vm.OrderHeader.Carrier;
-        //    }
-        //    if (vm.OrderHeader.TrackingNumber != null)
-        //    {
-        //        orderHeader.TrackingNumber = vm.OrderHeader.TrackingNumber;
-        //    }
-        //    _unitOfWork.OrderHeader.Update(orderHeader);
-        //    _unitOfWork.Save();
-        //    TempData["success"] = "Info Updated";
-        //    return RedirectToAction("OrderDetails", "Order", new { id = vm.OrderHeader.Id });
-        //}
+        [Authorize(Roles = WebSiteRole.Role_Admin + "," + WebSiteRole.Role_Employee)]
+        [HttpPost]
+        public IActionResult OrderDetails(OrderVM vm)
+        {
+            var orderHeader = _unitOfWork.OrderHeader.GetT(x => x.Id == vm.OrderHeader.Id);
+            orderHeader.Name = vm.OrderHeader.Name;
+            orderHeader.Phone = vm.OrderHeader.Phone;
+            orderHeader.Address = vm.OrderHeader.Address;
+            orderHeader.City = vm.OrderHeader.City;
+            orderHeader.State = vm.OrderHeader.State;
+            orderHeader.PostalCode = vm.OrderHeader.PostalCode;
+            if (vm.OrderHeader.Carrier != null)
+            {
+                orderHeader.Carrier = vm.OrderHeader.Carrier;
+            }
+            if (vm.OrderHeader.TrackingNumber != null)
+            {
+                orderHeader.TrackingNumber = vm.OrderHeader.TrackingNumber;
+            }
+            _unitOfWork.OrderHeader.Update(orderHeader);
+            _unitOfWork.Save();
+            TempData["success"] = "Info Updated";
+            return RedirectToAction("OrderDetails", "Order", new { id = vm.OrderHeader.Id });
+        }
 
-        //[Authorize(Roles = WebSiteRole.Role_Admin + "," + WebSiteRole.Role_Employee)]
-        //public IActionResult InProcess(OrderVM vm)
-        //{
-        //    _unitOfWork.OrderHeader.UpdateStatus(vm.OrderHeader.Id, OrderStatus.StatusInProcess);
-        //    _unitOfWork.Save();
-        //    TempData["success"] = "Order Status Updated-Inprocess";
-        //    return RedirectToAction("OrderDetails", "Order", new { id = vm.OrderHeader.Id });
-        //}
+        [Authorize(Roles = WebSiteRole.Role_Admin + "," + WebSiteRole.Role_Employee)]
+        public IActionResult InProcess(OrderVM vm)
+        {
+            _unitOfWork.OrderHeader.UpdateStatus(vm.OrderHeader.Id, OrderStatus.StatusInProcess);
+            _unitOfWork.Save();
+            TempData["success"] = "Order Status Updated-Inprocess";
+            return RedirectToAction("OrderDetails", "Order", new { id = vm.OrderHeader.Id });
+        }
 
-        //[Authorize(Roles = WebSiteRole.Role_Admin + "," + WebSiteRole.Role_Employee)]
-        //public IActionResult Shipped(OrderVM vm)
-        //{
-        //    var orderHeader = _unitOfWork.OrderHeader.GetT(x => x.Id == vm.OrderHeader.Id);
-        //    orderHeader.Carrier = vm.OrderHeader.Carrier;
-        //    orderHeader.TrackingNumber = vm.OrderHeader.TrackingNumber;
-        //    orderHeader.OrderStatus = OrderStatus.StatusShipped;
-        //    orderHeader.DateOfShipping = DateTime.Now;
-        //    _unitOfWork.OrderHeader.Update(orderHeader);
-        //    _unitOfWork.Save();
-        //    TempData["success"] = "Order Status Updated-Shipped";
-        //    return RedirectToAction("OrderDetails", "Order", new { id = vm.OrderHeader.Id });
-        //}
+        [Authorize(Roles = WebSiteRole.Role_Admin + "," + WebSiteRole.Role_Employee)]
+        public IActionResult Shipped(OrderVM vm)
+        {
+            var orderHeader = _unitOfWork.OrderHeader.GetT(x => x.Id == vm.OrderHeader.Id);
+            orderHeader.Carrier = vm.OrderHeader.Carrier;
+            orderHeader.TrackingNumber = vm.OrderHeader.TrackingNumber;
+            orderHeader.OrderStatus = OrderStatus.StatusShipped;
+            orderHeader.DateOfShipping = DateTime.Now;
+            _unitOfWork.OrderHeader.Update(orderHeader);
+            _unitOfWork.Save();
+            TempData["success"] = "Order Status Updated-Shipped";
+            return RedirectToAction("OrderDetails", "Order", new { id = vm.OrderHeader.Id });
+        }
 
-        //[Authorize(Roles = WebSiteRole.Role_Admin + "," + WebSiteRole.Role_Employee)]
-        //public IActionResult CancelOrder(OrderVM vm)
-        //{
-        //    var orderHeader = _unitOfWork.OrderHeader.GetT(x => x.Id == vm.OrderHeader.Id);
-        //    if (orderHeader.PaymentStatus == PaymentStatus.StatusApproved)
-        //    {
-        //        var refund = new RefundCreateOptions
-        //        {
-        //            Reason = RefundReasons.RequestedByCustomer,
-        //            PaymentIntent = orderHeader.PaymentIntentId
-        //        };
+        [Authorize(Roles = WebSiteRole.Role_Admin + "," + WebSiteRole.Role_Employee)]
+        public IActionResult CancelOrder(OrderVM vm)
+        {
+            var orderHeader = _unitOfWork.OrderHeader.GetT(x => x.Id == vm.OrderHeader.Id);
+            if (orderHeader.PaymentStatus == PaymentStatus.StatusApproved)
+            {
+                var refund = new RefundCreateOptions
+                {
+                    Reason = RefundReasons.RequestedByCustomer,
+                    PaymentIntent = orderHeader.PaymentIntentId
+                };
 
-        //        var service = new RefundService();
-        //        Refund Refund = service.Create(refund);
-        //        _unitOfWork.OrderHeader.UpdateStatus(orderHeader.Id, OrderStatus.StatusCancelled, OrderStatus.StatusRefunded);
-        //    }
-        //    else
-        //    {
-        //        _unitOfWork.OrderHeader.UpdateStatus(orderHeader.Id, OrderStatus.StatusCancelled, OrderStatus.StatusCancelled);
-        //    }
+                var service = new RefundService();
+                Refund Refund = service.Create(refund);
+                _unitOfWork.OrderHeader.UpdateStatus(orderHeader.Id, OrderStatus.StatusCancelled, OrderStatus.StatusRefunded);
+            }
+            else
+            {
+                _unitOfWork.OrderHeader.UpdateStatus(orderHeader.Id, OrderStatus.StatusCancelled, OrderStatus.StatusCancelled);
+            }
 
-        //    _unitOfWork.Save();
-        //    TempData["success"] = "Order Cancelled";
-        //    return RedirectToAction("OrderDetails", "Order", new { id = vm.OrderHeader.Id });
-        //}
+            _unitOfWork.Save();
+            TempData["success"] = "Order Cancelled";
+            return RedirectToAction("OrderDetails", "Order", new { id = vm.OrderHeader.Id });
+        }
 
         //public IActionResult PayNow(OrderVM vm)
         //{
