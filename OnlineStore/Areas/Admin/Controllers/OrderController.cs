@@ -7,6 +7,7 @@ using Stripe.Checkout;
 using Stripe.Climate;
 using Stripe;
 using System.Security.Claims;
+using OnlineStore.DataAccess.ViewModels;
 
 namespace OnlineStore.Areas.Admin.Controllers
 {
@@ -62,15 +63,15 @@ namespace OnlineStore.Areas.Admin.Controllers
             return View();
         }
 
-        //public IActionResult OrderDetails(int id)
-        //{
-        //    OrderVM orderVM = new OrderVM()
-        //    {
-        //        OrderHeader = _unitOfWork.OrderHeader.GetT(x => x.Id == id, includeProperties: "ApplicationUser"),
-        //        OrderDetails = _unitOfWork.OrderDetail.GetAll(x => x.OrderHeader.Id == id, includeProperties: "Product")
-        //    };
-        //    return View(orderVM);
-        //}
+        public IActionResult OrderDetails(int id)
+        {
+            OrderVM orderVM = new OrderVM()
+            {
+                OrderHeader = _unitOfWork.OrderHeader.GetT(x => x.Id == id, includeProperties: "ApplicationUser"),
+                OrderDetails = _unitOfWork.OrderDetail.GetAll(x => x.OrderHeader.Id == id, includeProperties: "Product")
+            };
+            return View(orderVM);
+        }
 
         //[Authorize(Roles = WebSiteRole.Role_Admin + "," + WebSiteRole.Role_Employee)]
         //[HttpPost]
