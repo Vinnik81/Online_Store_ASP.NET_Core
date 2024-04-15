@@ -29,12 +29,17 @@
                                 <span class="visually-hidden">(current)</span>
                             </a>
                         </li>
+
+                        @if (User.IsInRole("Admin"))
+                        {
                         <li class="nav-item">
                             <a class="nav-link" asp-area="Admin" asp-action="Index" asp-controller="Category">Category</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" asp-area="Admin" asp-action="Index" asp-controller="Product">Products</a>
                         </li> 
+                        }
+
                         @if (httpContext.HttpContext.Session.GetInt32("SessionCart") != null)
                         {
                             <li class="nav-item">

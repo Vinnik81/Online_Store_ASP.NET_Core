@@ -147,45 +147,45 @@ namespace OnlineStore.Areas.Admin.Controllers
             return RedirectToAction("OrderDetails", "Order", new { id = vm.OrderHeader.Id });
         }
 
-        //public IActionResult PayNow(OrderVM vm)
-        //{
-        //    var OrderHeader = _unitOfWork.OrderHeader.GetT(x => x.Id == vm.OrderHeader.Id, includeProperties: "ApplicationUser");
-        //    var OrderDetail = _unitOfWork.OrderDetail.GetAll(x => x.OrderHeader.Id == vm.OrderHeader.Id, includeProperties: "Product");
-        //    var domain = "https://localhost:7064/";
-        //    var options = new SessionCreateOptions
-        //    {
-        //        LineItems = new List<SessionLineItemOptions>(),
-        //        Mode = "payment",
-        //        SuccessUrl = domain + $"Customer/Cart/ordersuccess?id={vm.OrderHeader.Id}",
-        //        CancelUrl = domain + $"Customer/Cart/Index",
-        //    };
+        public IActionResult PayNow(OrderVM vm)
+        {
+            var OrderHeader = _unitOfWork.OrderHeader.GetT(x => x.Id == vm.OrderHeader.Id, includeProperties: "ApplicationUser");
+            var OrderDetail = _unitOfWork.OrderDetail.GetAll(x => x.OrderHeader.Id == vm.OrderHeader.Id, includeProperties: "Product");
+            var domain = "https://localhost:7064/";
+            var options = new SessionCreateOptions
+            {
+                LineItems = new List<SessionLineItemOptions>(),
+                Mode = "payment",
+                SuccessUrl = domain + $"Customer/Cart/ordersuccess?id={vm.OrderHeader.Id}",
+                CancelUrl = domain + $"Customer/Cart/Index",
+            };
 
-        //    foreach (var item in OrderDetail)
-        //    {
-        //        var lineItemsOptions = new SessionLineItemOptions
-        //        {
-        //            PriceData = new SessionLineItemPriceDataOptions
-        //            {
-        //                UnitAmount = (long)(item.Price * 100),
-        //                Currency = "RUB",
-        //                ProductData = new SessionLineItemPriceDataProductDataOptions
-        //                {
-        //                    Name = item.Product.Name,
-        //                },
-        //            },
-        //            Quantity = item.Count,
-        //        };
-        //        options.LineItems.Add(lineItemsOptions);
-        //    }
+            foreach (var item in OrderDetail)
+            {
+                var lineItemsOptions = new SessionLineItemOptions
+                {
+                    PriceData = new SessionLineItemPriceDataOptions
+                    {
+                        UnitAmount = (long)(item.Price * 100),
+                        Currency = "RUB",
+                        ProductData = new SessionLineItemPriceDataProductDataOptions
+                        {
+                            Name = item.Product.Name,
+                        },
+                    },
+                    Quantity = item.Count,
+                };
+                options.LineItems.Add(lineItemsOptions);
+            }
 
-        //    var service = new SessionService();
-        //    Session session = service.Create(options);
-        //    _unitOfWork.OrderHeader.PaymentStatus(vm.OrderHeader.Id, session.Id, session.PaymentIntentId);
-        //    _unitOfWork.Save();
-        //    Response.Headers.Add("Location", session.Url);
-        //    return new StatusCodeResult(303);
-        //    return RedirectToAction("Index", "Home");
-        //}
+            var service = new SessionService();
+            Session session = service.Create(options);
+            _unitOfWork.OrderHeader.PaymentStatus(vm.OrderHeader.Id, session.Id, session.PaymentIntentId);
+            _unitOfWork.Save();
+            Response.Headers.Add("Location", session.Url);
+            return new StatusCodeResult(303);
+            return RedirectToAction("Index", "Home");
+        }
     }
 
 }

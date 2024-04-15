@@ -172,8 +172,12 @@ namespace OnlineStore.Areas.Customer.Controllers
             if (cart.Count <= 1)
 			{
 				_unitOfWork.Cart.Delete(cart);
-			}
-			else
+
+                var count = _unitOfWork.Cart.GetAll(x => x.ApplicationUserId == cart.ApplicationUserId).ToList().Count - 1;
+                HttpContext.Session.SetInt32("SessionCart", count);
+
+            }
+            else
 			{
 				_unitOfWork.Cart.DecrementCartItem(cart, 1);
 			}
@@ -186,7 +190,11 @@ namespace OnlineStore.Areas.Customer.Controllers
             var cart = _unitOfWork.Cart.GetT(x => x.Id == id);
 			_unitOfWork.Cart.Delete(cart);
 			_unitOfWork.Save();
-			return RedirectToAction(nameof(Index));
+
+            var count = _unitOfWork.Cart.GetAll(x => x.ApplicationUserId == cart.ApplicationUserId).ToList().Count;
+            HttpContext.Session.SetInt32("SessionCart", count);
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }
